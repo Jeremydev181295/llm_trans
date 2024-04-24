@@ -24,7 +24,7 @@ def import_data(file_path):
 file_path = 'test_sample.txt'  # Replace 'data.txt' with your actual file path
 data = import_data(file_path)
 
-trans_lang = "Korean"
+trans_lang = "French"
 source_lang = "English"
 
 # Define the prompt template with a placeholder for the question
