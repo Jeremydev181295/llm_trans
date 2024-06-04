@@ -1,3 +1,12 @@
+from docx import Document
+# extract hyperlink data
+# def extract_hyperlink_data(file_path):
+#     doc = Document(file_path)
+#     print(doc.text.hyperlink.url)
+#     print(doc.text.hyperlink.text)
+
+
+
 
 # remove paragraphs using docx package
 def remove_empty_paragraphs(doc):
@@ -22,7 +31,8 @@ def extract_footnote_pos_string(doc, footnote_string):
         p = string.find(footnote_string)
         if p != -1:
             pos = p
-    return string[pos-10:pos]
+            break
+    return string[pos-30:pos]
 
 # extract_footnote using docx2python
 def extract_footnote(doc):
