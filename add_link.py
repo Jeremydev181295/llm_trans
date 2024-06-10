@@ -1,3 +1,4 @@
+from docx import Document
 import docx
 #This is only needed if you're using the builtin style above
 def get_or_create_hyperlink_style(d):
@@ -29,7 +30,8 @@ def get_or_create_hyperlink_style(d):
 
     return "Hyperlink"
 
-def add_hyperlink(paragraph, text, url):
+
+def add_hyperlink(paragraph, source_file_path, text, url):
     # This gets access to the document.xml.rels file and gets a new relation id value
     part = paragraph.part
     r_id = part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
@@ -43,10 +45,34 @@ def add_hyperlink(paragraph, text, url):
         docx.oxml.shared.OxmlElement('w:r'), paragraph)
     new_run.text = text
 
+   
     # Set the run's style to the builtin hyperlink style, defining it if necessary
-    new_run.style = get_or_create_hyperlink_style(part.document)
+
+    # new_run.style = get_or_create_hyperlink_style(part.document)
+
+    # copy source file link style
+    source_doc = Document(source_file_path)
+    for source_para in source_doc.paragraphs:
+            if source_para.full_text == text:
+                paragraph.style = source_para.style
+                if source_para.all_runs:
+                    for source_run in source_para.all_runs: 
+
+                        font_source = source_run.font
+                        font_target = new_run.font
+
+                        font_target.name = font_source.name
+                        font_target.size = font_source.size
+                        font_target.bold = font_source.bold
+                        font_target.italic = font_source.italic
+                        font_target.underline = font_source.underline
+                        font_target.color.rgb = font_source.color.rgb
+                        font_target.highlight_color = font_source.highlight_color
+                        
+                        font_target.math = font_source.math
+            
     # Alternatively, set the run's formatting explicitly
-    # new_run.font.color.rgb = docx.shared.RGBColor(0, 0, 255)
+    # new_run.font.color.rgb = docx.shared.RGBColor(0x05, 0x63, 0xC1)
     # new_run.font.underline = True
 
     # Join all the xml elements together
