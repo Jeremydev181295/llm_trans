@@ -63,3 +63,22 @@ def delete_paragraph(paragraph):
     p = paragraph._element
     p.getparent().remove(p)
     p._p = p._element = None
+
+def copy_page_setup(source_file_path, target_file_path):
+    source_doc = Document(source_file_path)
+    target_doc = Document(target_file_path)
+    source_doc_section = source_doc.sections[0]
+    target_doc_section = target_doc.sections[0]
+
+    target_doc_section.page_height = source_doc_section.page_height
+    target_doc_section.page_width = source_doc_section.page_width
+    target_doc_section.left_margin = source_doc_section.left_margin
+    target_doc_section.right_margin = source_doc_section.right_margin
+    target_doc_section.top_margin = source_doc_section.top_margin
+    target_doc_section.bottom_margin = source_doc_section.bottom_margin
+    target_doc_section.header_distance = source_doc_section.header_distance
+    target_doc_section.footer_distance = source_doc_section.footer_distance
+    
+    target_doc.save(target_file_path)
+
+
