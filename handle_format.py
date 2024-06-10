@@ -3,8 +3,8 @@
 # from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 def copy_paragraph_font_style(source_paragraph, target_paragraph, copy_para):
-    if source_paragraph.all_runs:
-        for i, source_run in enumerate(source_paragraph.all_runs):   
+    if source_paragraph.runs:
+        for i, source_run in enumerate(source_paragraph.runs):   
             target_run = target_paragraph.add_run()     
             copy_run = copy_para.add_run()
             

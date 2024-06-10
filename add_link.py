@@ -50,7 +50,7 @@ def add_hyperlink(paragraph, source_file_path, text, url):
 
     # new_run.style = get_or_create_hyperlink_style(part.document)
 
-    # copy source file link style
+    # # copy source file link style
     source_doc = Document(source_file_path)
     for source_para in source_doc.paragraphs:
             if source_para.full_text == text:
@@ -65,11 +65,12 @@ def add_hyperlink(paragraph, source_file_path, text, url):
                         font_target.size = font_source.size
                         font_target.bold = font_source.bold
                         font_target.italic = font_source.italic
-                        font_target.underline = font_source.underline
-                        font_target.color.rgb = font_source.color.rgb
-                        font_target.highlight_color = font_source.highlight_color
+                        font_target.underline = True
+                        font_target.color.rgb = docx.shared.RGBColor(0x05, 0x63, 0xC1)
+                            
+    #                     font_target.highlight_color = font_source.highlight_color
                         
-                        font_target.math = font_source.math
+    #                     font_target.math = font_source.math
             
     # Alternatively, set the run's formatting explicitly
     # new_run.font.color.rgb = docx.shared.RGBColor(0x05, 0x63, 0xC1)
