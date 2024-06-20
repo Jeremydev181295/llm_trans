@@ -1,12 +1,10 @@
 from docx import Document
-# extract hyperlink data
-# def extract_hyperlink_data(file_path):
-#     doc = Document(file_path)
-#     print(doc.text.hyperlink.url)
-#     print(doc.text.hyperlink.text)
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 
 
 
+from docx import Document
 
 # remove paragraphs using docx package
 def remove_empty_paragraphs(doc):
@@ -15,8 +13,19 @@ def remove_empty_paragraphs(doc):
             p_element = para._element
             p_element.getparent().remove(p_element)
 
-
-
+def extract_header(doc):
+    header_data_list = []
+    for header_run in doc.header_runs:
+        if header_run[0][0][0]:
+            for data in header_run[0][0]:
+                item_string = ''
+                for item in data:
+                    item_string += item
+                if item_string:
+                    print(item_string)   
+                    header_data_list.append(item_string)
+    return header_data_list  
+    
 # extract_content using docx2python
 def extract_content(doc):
     data_list=[]
@@ -26,6 +35,7 @@ def extract_content(doc):
     
     return data_list
 def extract_footnote_pos_string(doc, footnote_string):
+    pos = 0
     for sentence in doc.body[0][0][0]:
         string = sentence.strip()
         p = string.find(footnote_string)
@@ -33,6 +43,12 @@ def extract_footnote_pos_string(doc, footnote_string):
             pos = p
             break
     return string[pos-30:pos]
+
+def extract_footnote_para_strings(doc, index_list):
+    footnote_para_strings = []
+    for index in index_list:
+        footnote_para_strings.append(doc.body[0][0][0][index].strip())
+    return footnote_para_strings
 
 # extract_footnote using docx2python
 def extract_footnote(doc):
@@ -80,5 +96,37 @@ def copy_page_setup(source_file_path, target_file_path):
     target_doc_section.footer_distance = source_doc_section.footer_distance
     
     target_doc.save(target_file_path)
+
+def set_space_para_same_style(source_file_path, target_file_path):
+    source_doc = Document(source_file_path)
+    target_doc = Document(target_file_path)
+    for i, p in enumerate(source_doc.paragraphs):
+        p_element = p._element
+        if i < len(target_doc.paragraphs):
+            target_p_element = target_doc.paragraphs[i]._element
+            contextual_spacings_source = p_element.xpath(r'w:pPr/w:contextualSpacing')
+            contextual_spacings_target = target_p_element.xpath(r'w:pPr/w:contextualSpacing')
+            if contextual_spacings_source:
+                add_contextual_spacing(target_doc.paragraphs[i])
+            else:
+                if contextual_spacings_target:
+                    cspacing = contextual_spacings_target[0]
+                    cspacing.getparent().remove(cspacing)
+
+    target_doc.save(target_file_path)
+    
+
+def add_contextual_spacing(paragraph):
+    pPr = paragraph._element.pPr
+    if pPr is None:
+        pPr = OxmlElement('w:pPr')
+        paragraph._element.insert(0, pPr)
+    
+    # Check if contextualSpacing already exists
+    existing_contextual_spacing = pPr.find(qn('w:contextualSpacing'))
+    if existing_contextual_spacing is None:
+        # Create the contextualSpacing element
+        contextual_spacing = OxmlElement('w:contextualSpacing')
+        pPr.append(contextual_spacing)
 
 
