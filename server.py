@@ -1,11 +1,13 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for
 import os
 from werkzeug.utils import secure_filename
-import llm_translator_final
+import llm_translator
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
+RESULT_FOLDER = 'results'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['RESULT_FOLDER'] = RESULT_FOLDER
 
 @app.route('/')
 def hello_world():
@@ -24,13 +26,14 @@ def upload_file():
             return 'No selected file'
         if file:
             filename = secure_filename(file.filename)
+
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            result_filename = llm_translator_final.main(filename)
-            return "<a href=http://127.0.0.1:8081/>" + result_filename + "</a>"
+            result_filename = llm_translator.trans(filename)
+            result_file_path = os.path.join(app.config['RESULT_FOLDER'], result_filename)
+            result_url = url_for('static', filename=result_file_path)
+            return f"<a href='{result_url}'>{result_filename}</a>"
     return render_template('upload.html')
 
 
 if __name__ == '__main__':
-    from waitress import serve
-    
-    serve(app, host='127.0.0.1', port=8081)
+    app.run(debug=True, host='0.0.0.0', port=8081)
