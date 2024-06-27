@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 import llm_translator
@@ -29,10 +29,14 @@ def upload_file():
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             result_filename = llm_translator.trans(filename)
-            result_file_path = os.path.join(app.config['RESULT_FOLDER'], result_filename)
-            result_url = url_for('static', filename=result_file_path)
-            return f"<a href='{result_url}'>{result_filename}</a>"
-    return render_template('upload.html')
+            # result_file_path = os.path.join(app.config['RESULT_FOLDER'], result_filename)
+            # result_url = url_for('static', filename=result_file_path)
+            # return f"<a href='{result_url}'>{result_filename}</a>"
+
+            directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), app.config['RESULT_FOLDER'])
+            return send_from_directory(directory, result_filename)
+            # return {"directory":directory, "filename": result_filename}
+    # return render_template('upload.html')
 
 
 if __name__ == '__main__':
